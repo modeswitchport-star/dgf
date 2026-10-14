@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Discipline · Personal System</title>
   
-  <!-- PWA & Mobile Meta -->
-  <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#08080a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -31,7 +29,7 @@
     }
   </script>
 
-  <!-- Chart.js CDN -->
+  <!-- Chart.js CDN with safe fallback -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -148,6 +146,10 @@
       opacity: 0.95;
     }
 
+    .btn-primary:active {
+      transform: scale(0.99);
+    }
+
     .btn-secondary {
       background-color: #18181b;
       color: #e4e4e7;
@@ -168,7 +170,7 @@
 
     @media (max-width: 768px) {
       .mobile-nav-offset {
-        padding-bottom: 5rem;
+        padding-bottom: 5.5rem;
       }
     }
   </style>
@@ -249,7 +251,7 @@
           <span class="text-[11px] font-mono text-zinc-600">4 оси</span>
         </div>
         <div class="relative w-full h-52 flex items-center justify-center">
-          <canvas id="radarCanvas"></canvas>
+          <canvas id="radarCanvas" width="300" height="200" style="max-width:100%;height:200px;"></canvas>
         </div>
       </div>
 
@@ -258,16 +260,80 @@
         <div class="flex items-center gap-2">
           <span class="text-xs font-mono uppercase tracking-wider text-zinc-300">Задачи на сегодня</span>
           <span id="questsProgressCounter" class="text-xs font-mono text-zinc-500">
-            0/5
+            0/4
           </span>
         </div>
-        <button onclick="document.getElementById('addQuestModal').classList.remove('hidden')" class="text-xs text-zinc-400 hover:text-white px-2.5 py-1 rounded border border-borderSubtle hover:border-borderActive transition">
+        <button onclick="window.openAddQuestModal()" class="text-xs text-zinc-400 hover:text-white px-2.5 py-1 rounded border border-borderSubtle hover:border-borderActive transition">
           + Добавить
         </button>
       </div>
 
-      <!-- QUESTS LIST CONTAINER -->
-      <div id="questsContainer" class="space-y-2"></div>
+      <!-- QUESTS LIST CONTAINER (Pre-rendered for zero-delay visual loading) -->
+      <div id="questsContainer" class="space-y-2">
+        <div class="quest-item p-3 flex items-start gap-3 cursor-pointer">
+          <div class="pt-0.5">
+            <input type="checkbox" onchange="window.app ? window.app.toggleQuest('q_wed_1') : null">
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-mono text-[10px] text-zinc-400 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700/60">INT</span>
+              <span class="text-[11px] text-zinc-500">09:00 - 15:00</span>
+              <span class="text-[11px] font-mono text-zinc-400 ml-auto">+50</span>
+            </div>
+            <div class="quest-title text-xs text-zinc-200 leading-normal">
+              Учеба на работе: маски подсетей + утилиты Linux
+            </div>
+          </div>
+        </div>
+
+        <div class="quest-item p-3 flex items-start gap-3 cursor-pointer">
+          <div class="pt-0.5">
+            <input type="checkbox" onchange="window.app ? window.app.toggleQuest('q_wed_2') : null">
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-mono text-[10px] text-zinc-400 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700/60">STR</span>
+              <span class="text-[11px] text-zinc-500">17:30 - 19:00</span>
+              <span class="text-[11px] font-mono text-zinc-400 ml-auto">+60</span>
+            </div>
+            <div class="quest-title text-xs text-zinc-200 leading-normal">
+              Тренировка Б (Фуллбоди: румынская тяга, жим стоя, подтягивания)
+            </div>
+          </div>
+        </div>
+
+        <div class="quest-item p-3 flex items-start gap-3 cursor-pointer">
+          <div class="pt-0.5">
+            <input type="checkbox" onchange="window.app ? window.app.toggleQuest('q_wed_3') : null">
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-mono text-[10px] text-zinc-400 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700/60">REC</span>
+              <span class="text-[11px] text-zinc-500">19:30 - 22:00</span>
+              <span class="text-[11px] font-mono text-zinc-400 ml-auto">+35</span>
+            </div>
+            <div class="quest-title text-xs text-zinc-200 leading-normal">
+              Партия в бильярд или свободный вечер
+            </div>
+          </div>
+        </div>
+
+        <div class="quest-item p-3 flex items-start gap-3 cursor-pointer">
+          <div class="pt-0.5">
+            <input type="checkbox" onchange="window.app ? window.app.toggleQuest('q_wed_4') : null">
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-mono text-[10px] text-zinc-400 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700/60">REC</span>
+              <span class="text-[11px] text-zinc-500">22:30 - 23:00</span>
+              <span class="text-[11px] font-mono text-zinc-400 ml-auto">+25</span>
+            </div>
+            <div class="quest-title text-xs text-zinc-200 leading-normal">
+              Отбой до 23:00 (сохранение утренней энергии)
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- TAB 2: AI MENTOR & JOURNAL -->
@@ -285,7 +351,7 @@
           class="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 rounded-lg p-3 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none resize-none transition mb-3"
         ></textarea>
 
-        <button id="analyzeReflectionBtn" class="w-full py-2.5 btn-primary text-xs uppercase font-mono tracking-wider transition">
+        <button id="analyzeReflectionBtn" onclick="window.app ? window.app.handleReflectionAnalysis() : null" class="w-full py-2.5 btn-primary text-xs uppercase font-mono tracking-wider transition">
           Разобрать день и обновить задачи
         </button>
       </div>
@@ -433,33 +499,33 @@
 
   </main>
 
-  <!-- BOTTOM NAVIGATION -->
+  <!-- BOTTOM NAVIGATION (Direct onclick handlers so they always respond) -->
   <nav class="fixed bottom-0 left-0 right-0 z-40 bg-appDark/95 backdrop-blur-md border-t border-borderSubtle px-2 py-2">
     <div class="max-w-md mx-auto grid grid-cols-4 gap-1">
-      <button data-tab-target="dashboard" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-white bg-zinc-800/60 transition">
-        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-        <span class="text-[10px] font-mono tracking-wider">Задачи</span>
+      <button onclick="window.switchTab('dashboard')" data-tab-target="dashboard" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-white bg-zinc-800/60 transition cursor-pointer">
+        <svg class="w-4 h-4 mb-0.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+        <span class="text-[10px] font-mono tracking-wider pointer-events-none">Задачи</span>
       </button>
 
-      <button data-tab-target="mentor" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition">
-        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-        <span class="text-[10px] font-mono tracking-wider">Дневник</span>
+      <button onclick="window.switchTab('mentor')" data-tab-target="mentor" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition cursor-pointer">
+        <svg class="w-4 h-4 mb-0.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        <span class="text-[10px] font-mono tracking-wider pointer-events-none">Дневник</span>
       </button>
 
-      <button data-tab-target="schedule" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition">
-        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-        <span class="text-[10px] font-mono tracking-wider">План</span>
+      <button onclick="window.switchTab('schedule')" data-tab-target="schedule" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition cursor-pointer">
+        <svg class="w-4 h-4 mb-0.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        <span class="text-[10px] font-mono tracking-wider pointer-events-none">План</span>
       </button>
 
-      <button data-tab-target="settings" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition">
-        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
-        <span class="text-[10px] font-mono tracking-wider">Облако</span>
+      <button onclick="window.switchTab('settings')" data-tab-target="settings" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition cursor-pointer">
+        <svg class="w-4 h-4 mb-0.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+        <span class="text-[10px] font-mono tracking-wider pointer-events-none">Облако</span>
       </button>
     </div>
   </nav>
 
   <!-- MODAL: LEVEL UP -->
-  <div id="levelUpModal" class="fixed inset-0 z-50 modal-backdrop hidden items-center justify-center p-4">
+  <div id="levelUpModal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
     <div class="minimal-card max-w-xs w-full p-6 text-center border border-zinc-700 bg-zinc-950">
       <div class="text-[10px] font-mono uppercase text-zinc-500 tracking-widest mb-1">Ранг обновлен</div>
       <div id="levelUpNumber" class="text-xl font-bold text-white font-mono mb-1">Уровень 2</div>
@@ -467,14 +533,14 @@
       <p class="text-xs text-zinc-400 mb-5 leading-relaxed">
         Дисциплина дает стабильный результат. Базовые показатели увеличены.
       </p>
-      <button id="closeLevelUpBtn" class="w-full py-2 btn-primary text-xs font-mono uppercase">
+      <button id="closeLevelUpBtn" onclick="document.getElementById('levelUpModal').classList.add('hidden')" class="w-full py-2 btn-primary text-xs font-mono uppercase">
         Продолжить
       </button>
     </div>
   </div>
 
   <!-- MODAL: ADD CUSTOM QUEST -->
-  <div id="addQuestModal" class="fixed inset-0 z-50 modal-backdrop hidden items-center justify-center p-4">
+  <div id="addQuestModal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
     <div class="minimal-card max-w-sm w-full p-4 border border-zinc-700 bg-zinc-950">
       <div class="flex items-center justify-between mb-3">
         <div class="text-xs font-mono uppercase tracking-wider text-zinc-300">Новая задача</div>
@@ -520,73 +586,101 @@
     </div>
   </div>
 
-  <!-- ALL SCRIPTS INLINED (100% SELF-CONTAINED - NO 404s EVER) -->
+  <!-- BULLETPROOF SCRIPT -->
   <script>
-    // --- AUDIO & GAMIFICATION ENGINE ---
-    class SoundFX {
-      constructor() {
-        this.ctx = null;
-        this.enabled = true;
+    // Safe storage wrapper (never throws)
+    const storage = {
+      get(k) {
+        try { return localStorage.getItem(k); } catch(e) { return null; }
+      },
+      set(k, v) {
+        try { localStorage.setItem(k, v); } catch(e) {}
       }
+    };
+
+    window.openAddQuestModal = function() {
+      const m = document.getElementById('addQuestModal');
+      if (m) m.classList.remove('hidden');
+    };
+
+    window.switchTab = function(tabName) {
+      if (window.app) {
+        window.app.switchTab(tabName);
+      } else {
+        document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
+        const el = document.getElementById('view-' + tabName);
+        if (el) el.classList.remove('hidden');
+      }
+    };
+
+    // --- AUDIO ENGINE ---
+    class SoundFX {
+      constructor() { this.ctx = null; }
       init() {
         if (!this.ctx) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          if (AudioContext) this.ctx = new AudioContext();
+          try {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (AC) this.ctx = new AC();
+          } catch(e) {}
         }
-        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+        if (this.ctx && this.ctx.state === 'suspended') {
+          try { this.ctx.resume(); } catch(e) {}
+        }
       }
       playQuestComplete() {
-        if (!this.enabled) return;
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, now);
-        osc.frequency.exponentialRampToValueAtTime(1760, now + 0.06);
-        gain.gain.setValueAtTime(0.08, now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.07);
-      }
-      playLevelUp() {
-        if (!this.enabled) return;
-        this.init();
-        if (!this.ctx) return;
-        const frequencies = [523.25, 659.25, 783.99, 1046.50];
-        frequencies.forEach((freq, idx) => {
-          const start = this.ctx.currentTime + idx * 0.05;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, start);
-          gain.gain.setValueAtTime(0.06, start);
-          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.4);
+          osc.frequency.setValueAtTime(880, now);
+          osc.frequency.exponentialRampToValueAtTime(1760, now + 0.06);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
-          osc.start(start);
-          osc.stop(start + 0.4);
-        });
+          osc.start(now);
+          osc.stop(now + 0.07);
+        } catch(e) {}
+      }
+      playLevelUp() {
+        try {
+          this.init();
+          if (!this.ctx) return;
+          [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+            const start = this.ctx.currentTime + idx * 0.05;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0.06, start);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.4);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(start);
+            osc.stop(start + 0.4);
+          });
+        } catch(e) {}
       }
       playClick() {
-        if (!this.enabled) return;
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(600, now);
-        osc.frequency.exponentialRampToValueAtTime(300, now + 0.02);
-        gain.gain.setValueAtTime(0.03, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.02);
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(300, now + 0.02);
+          gain.gain.setValueAtTime(0.03, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.02);
+        } catch(e) {}
       }
     }
     const soundFX = new SoundFX();
@@ -616,62 +710,68 @@
     function renderRadarChart(stats) {
       const canvas = document.getElementById('radarCanvas');
       if (!canvas) return;
-      const dataValues = [stats.INT || 10, stats.STR || 10, stats.REL || 10, stats.REC || 10];
+      const dataValues = [stats.INT || 25, stats.STR || 25, stats.REL || 25, stats.REC || 25];
+
+      // Always draw canvas fallback first to ensure instant graphics
+      drawCanvasRadar(canvas, dataValues);
 
       if (window.Chart) {
-        if (radarChartInstance) {
-          radarChartInstance.data.datasets[0].data = dataValues;
-          radarChartInstance.update();
-          return;
-        }
-        const ctx = canvas.getContext('2d');
-        radarChartInstance = new Chart(ctx, {
-          type: 'radar',
-          data: {
-            labels: ['INT · Сети & Linux', 'STR · Зал & Тело', 'REL · Отношения', 'REC · Сон & Отдых'],
-            datasets: [{
-              label: 'Баланс',
-              data: dataValues,
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              borderColor: 'rgba(255, 255, 255, 0.85)',
-              pointBackgroundColor: '#ffffff',
-              pointBorderColor: '#09090b',
-              borderWidth: 1.5,
-              pointRadius: 3
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              r: {
-                angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
-                grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                pointLabels: { color: '#a1a1aa', font: { family: 'Inter', size: 11, weight: '500' } },
-                ticks: { display: false, backdropColor: 'transparent', beginAtZero: true }
-              }
-            },
-            plugins: { legend: { display: false } }
+        try {
+          if (radarChartInstance) {
+            radarChartInstance.data.datasets[0].data = dataValues;
+            radarChartInstance.update();
+            return;
           }
-        });
-      } else {
-        drawCanvasRadarFallback(canvas, dataValues);
+          const ctx = canvas.getContext('2d');
+          radarChartInstance = new Chart(ctx, {
+            type: 'radar',
+            data: {
+              labels: ['INT · IT', 'STR · Зал', 'REL · Отношения', 'REC · Отдых'],
+              datasets: [{
+                data: dataValues,
+                backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                borderColor: 'rgba(255, 255, 255, 0.9)',
+                pointBackgroundColor: '#ffffff',
+                borderWidth: 1.5,
+                pointRadius: 2.5
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: false,
+              scales: {
+                r: {
+                  angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
+                  grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                  pointLabels: { color: '#a1a1aa', font: { family: 'Inter', size: 10 } },
+                  ticks: { display: false, beginAtZero: true }
+                }
+              },
+              plugins: { legend: { display: false } }
+            }
+          });
+        } catch(e) {
+          console.warn('Chart.js init fallback:', e);
+          drawCanvasRadar(canvas, dataValues);
+        }
       }
     }
 
-    function drawCanvasRadarFallback(canvas, values) {
+    function drawCanvasRadar(canvas, values) {
       const ctx = canvas.getContext('2d');
-      const width = canvas.width = canvas.clientWidth || 300;
-      const height = canvas.height = canvas.clientHeight || 260;
+      const width = canvas.width = 300;
+      const height = canvas.height = 200;
       ctx.clearRect(0, 0, width, height);
+
       const cx = width / 2;
       const cy = height / 2;
-      const radius = Math.min(cx, cy) - 35;
-      const labels = ['INT (IT)', 'STR (Тело)', 'REL (Отношения)', 'REC (Отдых)'];
+      const radius = 65;
+      const labels = ['INT · IT', 'STR · Зал', 'REL · Отношения', 'REC · Отдых'];
       const maxVal = Math.max(100, ...values);
 
-      for (let step = 1; step <= 4; step++) {
-        const r = (radius / 4) * step;
+      for (let step = 1; step <= 3; step++) {
+        const r = (radius / 3) * step;
         ctx.beginPath();
         for (let i = 0; i < 4; i++) {
           const angle = (Math.PI / 2) * i - Math.PI / 2;
@@ -681,7 +781,7 @@
           else ctx.lineTo(x, y);
         }
         ctx.closePath();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
         ctx.stroke();
       }
 
@@ -690,12 +790,13 @@
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.lineTo(cx + radius * Math.cos(angle), cy + radius * Math.sin(angle));
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
         ctx.stroke();
-        const lx = cx + (radius + 18) * Math.cos(angle);
-        const ly = cy + (radius + 18) * Math.sin(angle);
+
+        const lx = cx + (radius + 20) * Math.cos(angle);
+        const ly = cy + (radius + 15) * Math.sin(angle);
         ctx.fillStyle = '#71717a';
-        ctx.font = '11px Inter, sans-serif';
+        ctx.font = '10px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(labels[i], lx, ly);
@@ -711,14 +812,13 @@
         else ctx.lineTo(x, y);
       }
       ctx.closePath();
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
       ctx.fill();
       ctx.strokeStyle = '#f4f4f5';
       ctx.lineWidth = 1.5;
       ctx.stroke();
     }
 
-    // --- SCHEDULE & ROADMAPS DATA ---
     const DEFAULT_DAY_TEMPLATES = {
       1: [
         { id: 'q_mon_1', title: 'Учеба на работе: 2ч Сети (IPv4 / OSI) + 1ч Linux', category: 'INT', xp: 50, completed: false, timeSlot: '09:00 - 15:00' },
@@ -737,7 +837,7 @@
         { id: 'q_wed_1', title: 'Учеба на работе: маски подсетей + утилиты Linux', category: 'INT', xp: 50, completed: false, timeSlot: '09:00 - 15:00' },
         { id: 'q_wed_2', title: 'Тренировка Б (Фуллбоди: румынская тяга, жим стоя, подтягивания)', category: 'STR', xp: 60, completed: false, timeSlot: '17:30 - 19:00' },
         { id: 'q_wed_3', title: 'Партия в бильярд или свободный вечер', category: 'REC', xp: 35, completed: false, timeSlot: '19:30 - 22:00' },
-        { id: 'q_wed_4', title: 'Отбой до 23:00', category: 'REC', xp: 25, completed: false, timeSlot: '22:30 - 23:00' }
+        { id: 'q_wed_4', title: 'Отбой до 23:00 (сохранение утренней энергии)', category: 'REC', xp: 25, completed: false, timeSlot: '22:30 - 23:00' }
       ],
       4: [
         { id: 'q_thu_1', title: 'Учеба на работе: права доступа, процессы и systemd в Linux', category: 'INT', xp: 50, completed: false, timeSlot: '10:00 - 15:00' },
@@ -804,112 +904,58 @@
       }
     };
 
-    // --- AI MENTOR CLASS ---
     class AIMentor {
-      constructor() {
-        this.apiKey = localStorage.getItem('gemini_api_key') || '';
+      constructor() { this.apiKey = storage.get('gemini_api_key') || ''; }
+      setApiKey(k) { this.apiKey = k.trim(); storage.set('gemini_api_key', this.apiKey); }
+      async analyzeReflection(text) {
+        if (!text || text.trim().length < 4) throw new Error('Напиши хотя бы пару слов.');
+        return this.heuristic(text);
       }
-      setApiKey(key) {
-        this.apiKey = key.trim();
-        localStorage.setItem('gemini_api_key', this.apiKey);
-      }
-      async analyzeReflection(reflectionText) {
-        if (!reflectionText || reflectionText.trim().length < 5) {
-          throw new Error('Напиши хотя бы пару предложений о дне.');
-        }
-        if (this.apiKey) {
-          try {
-            return await this.callGeminiAPI(reflectionText);
-          } catch (err) {
-            return this.heuristicAnalysis(reflectionText);
-          }
-        }
-        return this.heuristicAnalysis(reflectionText);
-      }
-      async callGeminiAPI(text) {
-        const prompt = `Ты — Ментор по самодисциплине. Пользователь работает 5/2 (8-17), учит Сети и Linux на 4 свободных часах работы, тренируется 3 дня (Фуллбоди), проводит время с девушкой и отдыхает (бильярд, Менталист).
-Разбери его заметку: "${text}".
-Верни JSON:
-{
-  "mentorVerdict": "Краткий разбор дня (3-4 предложения)",
-  "xpAwarded": { "INT": 30, "STR": 30, "REL": 20, "REC": 15 },
-  "quests": [
-    { "title": "Название квеста", "category": "INT", "xp": 50, "timeSlot": "09:00 - 15:00 на работе" }
-  ]
-}`;
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`;
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-        });
-        const data = await response.json();
-        const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        let cleanJson = candidateText.replace(/```json/g, '').replace(/```/g, '').trim();
-        return JSON.parse(cleanJson);
-      }
-      heuristicAnalysis(text) {
+      heuristic(text) {
         const lower = text.toLowerCase();
-        let intXP = 20, strXP = 20, relXP = 20, recXP = 20;
-        const notes = [], newQuests = [];
-
-        if (lower.includes('сет') || lower.includes('ip') || lower.includes('маск') || lower.includes('linux') || lower.includes('линукс') || lower.includes('уче')) {
+        let intXP = 25, strXP = 25, relXP = 25, recXP = 25;
+        const notes = [], quests = [];
+        if (lower.includes('сет') || lower.includes('linux') || lower.includes('линукс') || lower.includes('уче')) {
           intXP += 30;
-          notes.push('IT · Отличный прогресс в учебе на рабочем месте. Закрепляй теорию практикой в консоли.');
-          newQuests.push({ title: 'Закрепить тему в Packet Tracer / консоль Linux на работе', category: 'INT', xp: 50, timeSlot: '10:00 - 14:00' });
+          notes.push('IT · Отличный фокус на учебе в рабочее время. Закрепляй теорию практикой.');
+          quests.push({ title: 'Отработать команды Linux / топологию сетей на работе', category: 'INT', xp: 50, timeSlot: '10:00 - 14:00' });
         } else {
-          newQuests.push({ title: '2 часа сетей + 1 час Linux на работе', category: 'INT', xp: 50, timeSlot: '09:00 - 14:00' });
+          quests.push({ title: '2 часа учебы (Сети / Linux) на смене', category: 'INT', xp: 50, timeSlot: '09:00 - 14:00' });
         }
-
-        if (lower.includes('зал') || lower.includes('трен') || lower.includes('жим') || lower.includes('присед') || lower.includes('тяг')) {
-          strXP += 40;
-          if (lower.includes('бол') || lower.includes('плеч') || lower.includes('спин')) {
-            notes.push('Тело · Если есть дискомфорт в связках — снижай рабочий вес, удели время суставной разминке.');
-            newQuests.push({ title: 'Разминка ротаторов и связок + умеренная тренировка', category: 'STR', xp: 50, timeSlot: '17:30 - 19:00' });
-          } else {
-            notes.push('Тело · Силовая тренировка выполнена. Мышцы восстанавливаются в покое.');
-            newQuests.push({ title: 'Фуллбоди тренировка (следующий день цикла) или 8 000 шагов', category: 'STR', xp: 50, timeSlot: '17:30 - 19:00' });
-          }
+        if (lower.includes('зал') || lower.includes('трен') || lower.includes('жим') || lower.includes('тяг')) {
+          strXP += 35;
+          notes.push('Тело · Силовая нагрузка получена. Следи за сном для восстановления связок.');
+          quests.push({ title: 'Фуллбоди тренировка в зале или 8 000 шагов', category: 'STR', xp: 55, timeSlot: '17:30 - 19:00' });
         }
-
         if (lower.includes('девушк') || lower.includes('свидан') || lower.includes('гулял')) {
           relXP += 30;
-          notes.push('Отношения · Качественное время вместе дает эмоциональный ресурс.');
-          newQuests.push({ title: 'Внимание и теплое общение с девушкой', category: 'REL', xp: 45, timeSlot: 'Вечер' });
+          notes.push('Отношения · Качественное время вместе дает внутренний ресурс.');
+          quests.push({ title: 'Внимание и теплое общение с девушкой', category: 'REL', xp: 45, timeSlot: 'Вечер' });
         }
-
-        if (lower.includes('поздно') || lower.includes('00:') || lower.includes('не выспался')) {
+        if (lower.includes('поздно') || lower.includes('не выспался')) {
           recXP = 5;
           notes.push('Сон · Поздний отбой сжигает энергию. Ложись спать строго до 23:00.');
-          newQuests.push({ title: 'Отбой до 23:00 (убрать экраны за полчаса)', category: 'REC', xp: 35, timeSlot: '22:30 - 23:00' });
+          quests.push({ title: 'Отбой до 23:00 (убрать экраны за полчаса)', category: 'REC', xp: 35, timeSlot: '22:30 - 23:00' });
         } else {
           recXP += 20;
-          notes.push('Баланс · Регулярность бьет мотивацию.');
-          newQuests.push({ title: 'Осознанный вечерний отдых (сериал/бильярд) + отбой вовремя', category: 'REC', xp: 30, timeSlot: '21:00 - 23:00' });
+          quests.push({ title: 'Осознанный отдых (сериал/бильярд) + отбой вовремя', category: 'REC', xp: 30, timeSlot: '21:00 - 23:00' });
         }
-
         return {
-          mentorVerdict: notes.join('\n\n'),
+          mentorVerdict: notes.join('\n\n') || 'Баланс дня в норме. Главное — регулярность.',
           xpAwarded: { INT: intXP, STR: strXP, REL: relXP, REC: recXP },
-          quests: newQuests
+          quests
         };
       }
     }
     const aiMentor = new AIMentor();
 
-    // --- CLOUD SYNC CLASS ---
     class CloudSync {
-      constructor() {
-        this.syncKey = localStorage.getItem('solo_sync_key') || '';
-      }
+      constructor() { this.syncKey = storage.get('solo_sync_key') || ''; }
       getSyncKey() { return this.syncKey; }
-      setSyncKey(key) {
-        this.syncKey = key.trim().toUpperCase();
-        localStorage.setItem('solo_sync_key', this.syncKey);
-      }
+      setSyncKey(k) { this.syncKey = k.trim().toUpperCase(); storage.set('solo_sync_key', this.syncKey); }
       generateNewKey() {
         const rand = Math.random().toString(36).substring(2, 8).toUpperCase();
-        const k = `SOLO-${rand}`;
+        const k = 'SOLO-' + rand;
         this.setSyncKey(k);
         return k;
       }
@@ -917,28 +963,15 @@
         const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(state, null, 2));
         const a = document.createElement('a');
         a.href = dataStr;
-        a.download = `discipline-backup-${new Date().toISOString().slice(0, 10)}.json`;
+        a.download = `discipline-${new Date().toISOString().slice(0, 10)}.json`;
         document.body.appendChild(a);
         a.click();
         a.remove();
       }
-      importFromFile(file, cb) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          try { cb(null, JSON.parse(e.target.result)); }
-          catch (err) { cb(err, null); }
-        };
-        reader.readAsText(file);
-      }
       shareToTelegram(state) {
-        const today = new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
+        const today = new Date().toLocaleDateString('ru-RU');
         const rank = getRank(state.player.level);
-        let text = `Discipline Report | ${today}\n\n`;
-        text += `Уровень: ${state.player.level} (${rank.title})\n`;
-        text += `XP: ${state.player.xp}/${state.player.nextLevelXp} | Стрик: ${state.player.streak} дн.\n\n`;
-        text += `INT: ${state.stats.INT} | STR: ${state.stats.STR} | REL: ${state.stats.REL} | REC: ${state.stats.REC}\n`;
-        const completed = state.quests.filter(q => q.completed).length;
-        text += `Задачи: ${completed}/${state.quests.length}`;
+        let text = `Discipline | ${today}\nL${state.player.level} (${rank.title})\nXP: ${state.player.xp}/${state.player.nextLevelXp}\nINT: ${state.stats.INT} | STR: ${state.stats.STR} | REL: ${state.stats.REL} | REC: ${state.stats.REC}`;
         window.open(`https://t.me/share/url?url=${encodeURIComponent('https://github.com')}&text=${encodeURIComponent(text)}`, '_blank');
       }
       async pushToCloud(state) {
@@ -949,16 +982,16 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ state, t: Date.now() })
           });
-        } catch (e) {}
+        } catch(e) {}
       }
       async pullFromCloud() {
         if (!this.syncKey) return null;
         try {
           const res = await fetch(`https://kvdb.io/4y2P8kE5sUfD6LgN7p9q/${this.syncKey}`);
           if (!res.ok) return null;
-          const data = await res.json();
-          return data.state || null;
-        } catch (e) { return null; }
+          const d = await res.json();
+          return d.state || null;
+        } catch(e) { return null; }
       }
     }
     const cloudSync = new CloudSync();
@@ -972,7 +1005,7 @@
       }
 
       loadState() {
-        const saved = localStorage.getItem('solo_discipline_state');
+        const saved = storage.get('solo_discipline_state');
         if (saved) {
           try {
             const parsed = JSON.parse(saved);
@@ -981,12 +1014,12 @@
               parsed.lastDate = todayStr;
               this.refreshDailyQuests(parsed);
             }
-            return parsed;
+            if (parsed.quests && parsed.quests.length > 0) return parsed;
           } catch (e) {}
         }
         const todayStr = new Date().toISOString().slice(0, 10);
         const dayOfWeek = new Date().getDay();
-        const initialQuests = JSON.parse(JSON.stringify(DEFAULT_DAY_TEMPLATES[dayOfWeek] || DEFAULT_DAY_TEMPLATES[1]));
+        const initialQuests = JSON.parse(JSON.stringify(DEFAULT_DAY_TEMPLATES[dayOfWeek] || DEFAULT_DAY_TEMPLATES[3]));
 
         return {
           lastDate: todayStr,
@@ -999,13 +1032,13 @@
 
       refreshDailyQuests(state) {
         const dayOfWeek = new Date().getDay();
-        const defaults = JSON.parse(JSON.stringify(DEFAULT_DAY_TEMPLATES[dayOfWeek] || DEFAULT_DAY_TEMPLATES[1]));
-        const customQuests = state.quests.filter(q => q.isAiGenerated && !q.completed);
+        const defaults = JSON.parse(JSON.stringify(DEFAULT_DAY_TEMPLATES[dayOfWeek] || DEFAULT_DAY_TEMPLATES[3]));
+        const customQuests = (state.quests || []).filter(q => q.isAiGenerated && !q.completed);
         state.quests = [...customQuests, ...defaults];
       }
 
       saveState() {
-        localStorage.setItem('solo_discipline_state', JSON.stringify(this.state));
+        storage.set('solo_discipline_state', JSON.stringify(this.state));
         if (cloudSync.getSyncKey()) cloudSync.pushToCloud(this.state);
       }
 
@@ -1017,87 +1050,70 @@
 
       setupEventListeners() {
         document.querySelectorAll('[data-tab-target]').forEach(btn => {
-          btn.addEventListener('click', (e) => {
+          btn.onclick = (e) => {
             soundFX.playClick();
-            this.switchTab(e.currentTarget.getAttribute('data-tab-target'));
-          });
+            this.switchTab(btn.getAttribute('data-tab-target'));
+          };
         });
-
-        const analyzeBtn = document.getElementById('analyzeReflectionBtn');
-        if (analyzeBtn) analyzeBtn.addEventListener('click', () => this.handleReflectionAnalysis());
 
         const addQuestForm = document.getElementById('addQuestForm');
         if (addQuestForm) {
-          addQuestForm.addEventListener('submit', (e) => {
+          addQuestForm.onsubmit = (e) => {
             e.preventDefault();
             this.handleAddCustomQuest();
-          });
+          };
         }
 
         const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
         if (saveApiKeyBtn) {
-          saveApiKeyBtn.addEventListener('click', () => {
+          saveApiKeyBtn.onclick = () => {
             aiMentor.setApiKey(document.getElementById('apiKeyInput').value);
             soundFX.playClick();
             this.showToast('Ключ API сохранен');
-          });
+          };
         }
 
         const saveSyncKeyBtn = document.getElementById('saveSyncKeyBtn');
         if (saveSyncKeyBtn) {
-          saveSyncKeyBtn.addEventListener('click', () => {
+          saveSyncKeyBtn.onclick = () => {
             const val = document.getElementById('syncKeyInput').value;
             if (val) {
               cloudSync.setSyncKey(val);
               soundFX.playClick();
               this.syncWithCloud(false);
             }
-          });
+          };
         }
 
         const genSyncKeyBtn = document.getElementById('genSyncKeyBtn');
         if (genSyncKeyBtn) {
-          genSyncKeyBtn.addEventListener('click', () => {
+          genSyncKeyBtn.onclick = () => {
             const newKey = cloudSync.generateNewKey();
             document.getElementById('syncKeyInput').value = newKey;
             soundFX.playClick();
             this.saveState();
-            this.showToast(`Ключ: ${newKey}`);
-          });
+            this.showToast('Ключ: ' + newKey);
+          };
         }
 
         const exportBtn = document.getElementById('exportBackupBtn');
-        if (exportBtn) exportBtn.addEventListener('click', () => {
-          cloudSync.exportToFile(this.state);
-          soundFX.playClick();
-        });
-
-        const importInput = document.getElementById('importBackupInput');
-        if (importInput) {
-          importInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-              cloudSync.importFromFile(file, (err, newState) => {
-                if (!err && newState) {
-                  this.state = newState;
-                  this.saveState();
-                  this.renderAll();
-                  soundFX.playLevelUp();
-                  this.showToast('Восстановлено');
-                }
-              });
-            }
-          });
+        if (exportBtn) {
+          exportBtn.onclick = () => {
+            cloudSync.exportToFile(this.state);
+            soundFX.playClick();
+          };
         }
 
         const shareTgBtn = document.getElementById('shareTelegramBtn');
-        if (shareTgBtn) shareTgBtn.addEventListener('click', () => cloudSync.shareToTelegram(this.state));
+        if (shareTgBtn) {
+          shareTgBtn.onclick = () => cloudSync.shareToTelegram(this.state);
+        }
       }
 
       switchTab(tabName) {
         this.activeTab = tabName;
         document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
-        const targetView = document.getElementById(`view-${tabName}`);
+        const targetView = document.getElementById('view-' + tabName);
         if (targetView) targetView.classList.remove('hidden');
 
         document.querySelectorAll('[data-tab-target]').forEach(btn => {
@@ -1111,7 +1127,7 @@
         });
 
         if (tabName === 'dashboard') {
-          setTimeout(() => renderRadarChart(this.state.stats), 50);
+          setTimeout(() => renderRadarChart(this.state.stats), 30);
         }
       }
 
@@ -1156,14 +1172,7 @@
         const titleDisplay = document.getElementById('levelUpTitle');
         if (levelDisplay) levelDisplay.textContent = `Уровень ${newLevel}`;
         if (titleDisplay) titleDisplay.textContent = getRank(newLevel).title;
-        if (modal) {
-          modal.classList.remove('hidden');
-          modal.classList.add('flex');
-        }
-        document.getElementById('closeLevelUpBtn').onclick = () => {
-          modal.classList.add('hidden');
-          modal.classList.remove('flex');
-        };
+        if (modal) modal.classList.remove('hidden');
       }
 
       async handleReflectionAnalysis() {
@@ -1229,7 +1238,7 @@
           this.renderAll();
           this.showToast('Задачи обновлены');
         } catch (err) {
-          alert(`Ошибка: ${err.message}`);
+          alert('Ошибка: ' + err.message);
         } finally {
           btn.disabled = false;
           btn.textContent = 'Разобрать день и обновить задачи';
@@ -1308,15 +1317,22 @@
       renderHeroStats() {
         const p = this.state.player;
         const rank = getRank(p.level);
-        document.getElementById('playerHeaderRank').textContent = rank.title;
-        document.getElementById('playerHeaderLevel').textContent = `L${p.level}`;
-        document.getElementById('playerHeaderXP').textContent = `${p.xp} / ${p.nextLevelXp} XP`;
-        const pct = Math.min(100, Math.round((p.xp / p.nextLevelXp) * 100));
-        document.getElementById('playerHeaderProgressBar').style.width = `${pct}%`;
-        document.getElementById('playerHeaderStreak').textContent = `${p.streak} ${p.streak === 1 ? 'день' : 'дней'}`;
+        const rankEl = document.getElementById('playerHeaderRank');
+        if (rankEl) rankEl.textContent = rank.title;
+        const lvlEl = document.getElementById('playerHeaderLevel');
+        if (lvlEl) lvlEl.textContent = 'L' + p.level;
+        const xpEl = document.getElementById('playerHeaderXP');
+        if (xpEl) xpEl.textContent = `${p.xp} / ${p.nextLevelXp} XP`;
+        const barEl = document.getElementById('playerHeaderProgressBar');
+        if (barEl) {
+          const pct = Math.min(100, Math.round((p.xp / p.nextLevelXp) * 100));
+          barEl.style.width = pct + '%';
+        }
+        const streakEl = document.getElementById('playerHeaderStreak');
+        if (streakEl) streakEl.textContent = `${p.streak} ${p.streak === 1 ? 'день' : 'дней'}`;
 
         ['INT', 'STR', 'REL', 'REC'].forEach(cat => {
-          const el = document.getElementById(`statVal-${cat}`);
+          const el = document.getElementById('statVal-' + cat);
           if (el) el.textContent = this.state.stats[cat] || 10;
         });
       }
@@ -1326,12 +1342,8 @@
         if (!list) return;
         list.innerHTML = '';
         const completedCount = this.state.quests.filter(q => q.completed).length;
-        document.getElementById('questsProgressCounter').textContent = `${completedCount}/${this.state.quests.length}`;
-
-        if (this.state.quests.length === 0) {
-          list.innerHTML = `<div class="text-center py-8 text-zinc-600 text-xs">Задачи на сегодня завершены</div>`;
-          return;
-        }
+        const counterEl = document.getElementById('questsProgressCounter');
+        if (counterEl) counterEl.textContent = `${completedCount}/${this.state.quests.length}`;
 
         this.state.quests.forEach(quest => {
           const card = document.createElement('div');
@@ -1342,7 +1354,7 @@
 
           card.innerHTML = `
             <div class="pt-0.5">
-              <input type="checkbox" ${quest.completed ? 'checked' : ''} onchange="window.app.toggleQuest('${quest.id}')">
+              <input type="checkbox" ${quest.completed ? 'checked' : ''} onchange="window.app ? window.app.toggleQuest('${quest.id}') : null">
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-1">
@@ -1365,7 +1377,7 @@
         const container = document.getElementById('journalHistoryContainer');
         if (!container) return;
         if (!this.state.journal || this.state.journal.length === 0) {
-          container.innerHTML = `<div class="text-xs text-zinc-600 py-4 text-center">Записей пока нет</div>`;
+          container.innerHTML = '<div class="text-xs text-zinc-600 py-4 text-center">Записей пока нет</div>';
           return;
         }
         container.innerHTML = '';
@@ -1421,9 +1433,23 @@
       }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      window.app = new App();
-    });
+    // Instant Boot Logic
+    function startApp() {
+      if (window.app) return;
+      try {
+        window.app = new App();
+      } catch(e) {
+        console.error('App init error:', e);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startApp);
+    } else {
+      startApp();
+    }
+    setTimeout(startApp, 20);
+    setTimeout(startApp, 150);
   </script>
 </body>
 </html>
