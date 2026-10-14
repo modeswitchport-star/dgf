@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Discipline · Personal System</title>
+  
+  <!-- PWA & Mobile Meta -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#08080a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Discipline">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            appDark: '#08080a',
+            surfaceDark: '#101014',
+            surfaceHover: '#16161c',
+            borderSubtle: 'rgba(255, 255, 255, 0.07)',
+            borderActive: 'rgba(255, 255, 255, 0.18)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom Swiss Minimalist CSS -->
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="bg-appDark text-zinc-100 flex flex-col min-h-screen">
+
+  <!-- TOP HEADER -->
+  <header class="sticky top-0 z-40 bg-appDark/95 backdrop-blur-md border-b border-borderSubtle px-4 py-3">
+    <div class="max-w-2xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+        <div>
+          <div class="text-xs font-semibold tracking-wider uppercase text-zinc-100 font-mono">
+            DISCIPLINE
+          </div>
+          <div id="playerHeaderRank" class="text-[11px] text-zinc-500 font-mono">
+            Уровень 1 · Инициация
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 font-mono text-xs">
+        <!-- Streak -->
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded border border-borderSubtle bg-surfaceDark text-zinc-300">
+          <span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+          <span id="playerHeaderStreak">1 день</span>
+        </div>
+
+        <!-- Level Badge -->
+        <div id="playerHeaderLevel" class="px-2.5 py-1 rounded bg-white text-black font-semibold">
+          L1
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-2xl w-full mx-auto px-4 py-5 mobile-nav-offset">
+
+    <!-- ==================== TAB 1: DASHBOARD ==================== -->
+    <div id="view-dashboard" class="tab-view space-y-4">
+      
+      <!-- HERO PLAYER SUMMARY -->
+      <div class="minimal-card p-4">
+        <div class="flex justify-between items-baseline mb-2">
+          <div class="text-[11px] font-mono uppercase text-zinc-500 tracking-wider">Прогресс ранга</div>
+          <div id="playerHeaderXP" class="text-xs font-mono text-zinc-400">
+            0 / 100 XP
+          </div>
+        </div>
+
+        <!-- Clean Thin Progress Line -->
+        <div class="w-full bg-zinc-900 rounded-full h-1 overflow-hidden mb-4">
+          <div id="playerHeaderProgressBar" class="bg-white h-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <!-- 4 Stat Counters Grid -->
+        <div class="grid grid-cols-4 gap-2 pt-1 border-t border-borderSubtle text-center">
+          <div class="py-1">
+            <div class="text-[10px] font-mono text-zinc-500 uppercase">INT</div>
+            <div id="statVal-INT" class="text-sm font-semibold text-zinc-200 font-mono">25</div>
+          </div>
+          <div class="py-1">
+            <div class="text-[10px] font-mono text-zinc-500 uppercase">STR</div>
+            <div id="statVal-STR" class="text-sm font-semibold text-zinc-200 font-mono">25</div>
+          </div>
+          <div class="py-1">
+            <div class="text-[10px] font-mono text-zinc-500 uppercase">REL</div>
+            <div id="statVal-REL" class="text-sm font-semibold text-zinc-200 font-mono">25</div>
+          </div>
+          <div class="py-1">
+            <div class="text-[10px] font-mono text-zinc-500 uppercase">REC</div>
+            <div id="statVal-REC" class="text-sm font-semibold text-zinc-200 font-mono">25</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RADAR SPIDER CHART -->
+      <div class="minimal-card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Баланс системы</div>
+          <span class="text-[11px] font-mono text-zinc-600">4 оси</span>
+        </div>
+        <div class="relative w-full h-52 flex items-center justify-center">
+          <canvas id="radarCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- DAILY QUESTS HEADER -->
+      <div class="flex items-center justify-between pt-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono uppercase tracking-wider text-zinc-300">Задачи на сегодня</span>
+          <span id="questsProgressCounter" class="text-xs font-mono text-zinc-500">
+            0/5
+          </span>
+        </div>
+        <button onclick="document.getElementById('addQuestModal').classList.remove('hidden')" class="text-xs text-zinc-400 hover:text-white px-2.5 py-1 rounded border border-borderSubtle hover:border-borderActive transition">
+          + Добавить
+        </button>
+      </div>
+
+      <!-- QUESTS LIST CONTAINER -->
+      <div id="questsContainer" class="space-y-2">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: AI MENTOR & JOURNAL ==================== -->
+    <div id="view-mentor" class="tab-view space-y-4 hidden">
+      <div class="minimal-card p-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">Рефлексия дня</div>
+        <p class="text-xs text-zinc-500 leading-relaxed">
+          Запиши итоги: что успел разобрать по сетям/Linux на работе, тренировка, самочувствие, отношения и сон. Система адаптирует задачи и начислит опыт.
+        </p>
+      </div>
+
+      <!-- INPUT CARD -->
+      <div class="minimal-card p-4">
+        <textarea id="reflectionInput" rows="4" 
+          placeholder="Например: 2 часа разбирал маски подсетей на работе, понял префиксы. Вечером тренировка А — жим 65кг, плечо в норме. Встретился с девушкой, погуляли. Отбой в 23:00..."
+          class="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 rounded-lg p-3 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none resize-none transition mb-3"
+        ></textarea>
+
+        <button id="analyzeReflectionBtn" class="w-full py-2.5 btn-primary text-xs uppercase font-mono tracking-wider transition">
+          Разобрать день и обновить задачи
+        </button>
+      </div>
+
+      <!-- MENTOR RESULT CARD -->
+      <div id="mentorResultCard" class="minimal-card p-4 hidden space-y-3 border-zinc-700">
+        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+          <span class="text-xs font-mono text-zinc-400 uppercase">Анализ системы</span>
+          <div id="mentorXpBadges" class="flex flex-wrap gap-1"></div>
+        </div>
+        <div id="mentorVerdictText" class="text-xs text-zinc-300 leading-relaxed font-sans"></div>
+      </div>
+
+      <!-- JOURNAL HISTORY -->
+      <div>
+        <div class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-2">История заметок</div>
+        <div id="journalHistoryContainer" class="space-y-2">
+          <!-- Rendered by app.js -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: SCHEDULE & ROADMAPS ==================== -->
+    <div id="view-schedule" class="tab-view space-y-4 hidden">
+      
+      <!-- SCHEDULE SUMMARY -->
+      <div class="minimal-card p-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-3">Структура недели</div>
+        <div class="space-y-2 text-xs">
+          <div class="p-2.5 rounded bg-zinc-900/80 border border-zinc-800/80 flex items-start gap-3">
+            <span class="font-mono text-zinc-400 whitespace-nowrap">08–17:00</span>
+            <div class="text-zinc-300">
+              <strong class="text-white">Работа:</strong> 2–3 часа учебы (Сети / Linux) закрываются в свободное время на смене.
+            </div>
+          </div>
+          <div class="p-2.5 rounded bg-zinc-900/80 border border-zinc-800/80 flex items-start gap-3">
+            <span class="font-mono text-zinc-400 whitespace-nowrap">Пн/Ср/Пт</span>
+            <div class="text-zinc-300">
+              <strong class="text-white">17:30–19:00:</strong> Силовая тренировка в зале (Фуллбоди).
+            </div>
+          </div>
+          <div class="p-2.5 rounded bg-zinc-900/80 border border-zinc-800/80 flex items-start gap-3">
+            <span class="font-mono text-zinc-400 whitespace-nowrap">Вт/Чт/Сб</span>
+            <div class="text-zinc-300">
+              <strong class="text-white">Вечера:</strong> Время с девушкой, свидания и совместный отдых.
+            </div>
+          </div>
+          <div class="p-2.5 rounded bg-zinc-900/80 border border-zinc-800/80 flex items-start gap-3">
+            <span class="font-mono text-zinc-400 whitespace-nowrap">Отдых</span>
+            <div class="text-zinc-300">
+              <strong class="text-white">Бильярд / Сериал:</strong> Восстановление без чувства вины, сон до 23:00.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GYM WORKOUTS -->
+      <div class="minimal-card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="text-xs font-mono uppercase tracking-wider text-zinc-400">Программа тренировок (Fullbody)</div>
+          <span class="text-[11px] font-mono text-zinc-500">3 дня</span>
+        </div>
+        
+        <div class="space-y-3">
+          <div class="p-3 rounded-lg bg-zinc-900/60 border border-zinc-800/80">
+            <div class="text-xs font-semibold text-zinc-200 mb-1.5 font-mono">День А · Понедельник</div>
+            <ul id="workoutAList" class="space-y-1"></ul>
+          </div>
+
+          <div class="p-3 rounded-lg bg-zinc-900/60 border border-zinc-800/80">
+            <div class="text-xs font-semibold text-zinc-200 mb-1.5 font-mono">День Б · Среда</div>
+            <ul id="workoutBList" class="space-y-1"></ul>
+          </div>
+
+          <div class="p-3 rounded-lg bg-zinc-900/60 border border-zinc-800/80">
+            <div class="text-xs font-semibold text-zinc-200 mb-1.5 font-mono">День В · Пятница</div>
+            <ul id="workoutCList" class="space-y-1"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- IT ROADMAPS -->
+      <div class="space-y-3">
+        <div class="minimal-card p-4">
+          <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2">Сети · Network+ / CCNA</div>
+          <div id="networksRoadmapList" class="space-y-1"></div>
+        </div>
+
+        <div class="minimal-card p-4">
+          <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2">Linux · CLI & Bash</div>
+          <div id="linuxRoadmapList" class="space-y-1"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: CLOUD & SETTINGS ==================== -->
+    <div id="view-settings" class="tab-view space-y-4 hidden">
+      
+      <!-- CLOUD SYNC -->
+      <div class="minimal-card p-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">Синхронизация (ПК и телефон)</div>
+        <p class="text-xs text-zinc-500 mb-3">
+          Введи один ключ на обоих устройствах для авто-синхронизации.
+        </p>
+
+        <div class="flex gap-2 mb-2">
+          <input type="text" id="syncKeyInput" placeholder="SOLO-XXXX" class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-zinc-200 uppercase tracking-wider focus:outline-none focus:border-zinc-600">
+          <button id="saveSyncKeyBtn" class="btn-primary px-3 py-2 text-xs font-mono">
+            Связать
+          </button>
+        </div>
+
+        <button id="genSyncKeyBtn" class="text-xs text-zinc-400 hover:text-white font-mono transition">
+          Сгенерировать новый ключ
+        </button>
+      </div>
+
+      <!-- TELEGRAM EXPORT -->
+      <div class="minimal-card p-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">Экспорт в Telegram</div>
+        <p class="text-xs text-zinc-500 mb-3">
+          Отправить текстовый отчет дня в личные сообщения или «Избранное».
+        </p>
+        <button id="shareTelegramBtn" class="w-full py-2 btn-secondary text-xs font-mono transition">
+          Отправить в Telegram
+        </button>
+      </div>
+
+      <!-- GEMINI API KEY -->
+      <div class="minimal-card p-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">Google Gemini API (опционально)</div>
+        <p class="text-xs text-zinc-500 mb-2">
+          Бесплатный ключ из Google AI Studio для углубленного разбора заметок нейросетью.
+        </p>
+
+        <div class="flex gap-2">
+          <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-zinc-200 focus:outline-none focus:border-zinc-600">
+          <button id="saveApiKeyBtn" class="btn-secondary px-3 py-2 text-xs font-mono">
+            Сохранить
+          </button>
+        </div>
+      </div>
+
+      <!-- LOCAL BACKUP -->
+      <div class="minimal-card p-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2">Резервная копия</div>
+        <div class="flex gap-2">
+          <button id="exportBackupBtn" class="flex-1 py-2 btn-secondary text-xs font-mono text-center">
+            Экспорт JSON
+          </button>
+          <label class="flex-1 py-2 btn-secondary text-xs font-mono text-center cursor-pointer">
+            Импорт JSON
+            <input type="file" id="importBackupInput" accept=".json" class="hidden">
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ==================== BOTTOM NAVIGATION (MINIMALIST) ==================== -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-appDark/95 backdrop-blur-md border-t border-borderSubtle px-2 py-2">
+    <div class="max-w-md mx-auto grid grid-cols-4 gap-1">
+      
+      <button data-tab-target="dashboard" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-white bg-zinc-800/60 transition">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+        <span class="text-[10px] font-mono tracking-wider">Задачи</span>
+      </button>
+
+      <button data-tab-target="mentor" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        <span class="text-[10px] font-mono tracking-wider">Дневник</span>
+      </button>
+
+      <button data-tab-target="schedule" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        <span class="text-[10px] font-mono tracking-wider">План</span>
+      </button>
+
+      <button data-tab-target="settings" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+        <span class="text-[10px] font-mono tracking-wider">Облако</span>
+      </button>
+
+    </div>
+  </nav>
+
+  <!-- ==================== MODAL: LEVEL UP ==================== -->
+  <div id="levelUpModal" class="fixed inset-0 z-50 modal-backdrop hidden items-center justify-center p-4">
+    <div class="minimal-card max-w-xs w-full p-6 text-center border border-zinc-700 bg-zinc-950">
+      <div class="text-[10px] font-mono uppercase text-zinc-500 tracking-widest mb-1">Ранг обновлен</div>
+      <div id="levelUpNumber" class="text-xl font-bold text-white font-mono mb-1">Уровень 2</div>
+      <div id="levelUpTitle" class="text-xs text-zinc-400 font-mono mb-4">Уровень 2 · Практик</div>
+      <p class="text-xs text-zinc-400 mb-5 leading-relaxed">
+        Дисциплина дает стабильный результат. Базовые показатели увеличены.
+      </p>
+      <button id="closeLevelUpBtn" class="w-full py-2 btn-primary text-xs font-mono uppercase">
+        Продолжить
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: ADD CUSTOM QUEST ==================== -->
+  <div id="addQuestModal" class="fixed inset-0 z-50 modal-backdrop hidden items-center justify-center p-4">
+    <div class="minimal-card max-w-sm w-full p-4 border border-zinc-700 bg-zinc-950">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-xs font-mono uppercase tracking-wider text-zinc-300">Новая задача</div>
+        <button onclick="document.getElementById('addQuestModal').classList.add('hidden')" class="text-zinc-500 hover:text-white">&times;</button>
+      </div>
+      
+      <form id="addQuestForm" class="space-y-3">
+        <div>
+          <label class="block text-[10px] font-mono text-zinc-400 mb-1">Описание</label>
+          <input type="text" id="customQuestTitle" required placeholder="Например: Повторить команды chmod и chown" class="w-full bg-zinc-900 border border-zinc-800 rounded p-2 text-xs text-zinc-200 focus:outline-none focus:border-zinc-600">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] font-mono text-zinc-400 mb-1">Категория</label>
+            <select id="customQuestCategory" class="w-full bg-zinc-900 border border-zinc-800 rounded p-2 text-xs text-zinc-200 focus:outline-none focus:border-zinc-600 font-mono">
+              <option value="INT">INT · IT</option>
+              <option value="STR">STR · Зал</option>
+              <option value="REL">REL · Отношения</option>
+              <option value="REC">REC · Отдых</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-mono text-zinc-400 mb-1">Опыт (XP)</label>
+            <input type="number" id="customQuestXP" value="40" min="10" max="200" class="w-full bg-zinc-900 border border-zinc-800 rounded p-2 text-xs text-zinc-200 focus:outline-none focus:border-zinc-600 font-mono">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-mono text-zinc-400 mb-1">Слот времени</label>
+          <input type="text" id="customQuestTime" placeholder="Например: На работе (10:00 - 13:00)" class="w-full bg-zinc-900 border border-zinc-800 rounded p-2 text-xs text-zinc-200 focus:outline-none focus:border-zinc-600">
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="document.getElementById('addQuestModal').classList.add('hidden')" class="flex-1 py-2 btn-secondary text-xs font-mono">
+            Отмена
+          </button>
+          <button type="submit" class="flex-1 py-2 btn-primary text-xs font-mono uppercase">
+            Создать
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Application Logic Scripts -->
+  <script src="./js/gamification.js"></script>
+  <script src="./js/quests.js"></script>
+  <script src="./js/ai-mentor.js"></script>
+  <script src="./js/cloud-sync.js"></script>
+  <script src="./js/app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "Solo Discipline - RPG Life Tracker",
+  "short_name": "SoloDiscipline",
+  "description": "Персональная RPG-система прокачки жизни, тренировок, учебы и дисциплины",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b0f19",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='128' fill='%230f172a'/><path d='M256 64L384 192L320 448L256 384L192 448L128 192Z' fill='%2306b6d4'/><path d='M256 128L340 212L300 380L256 336L212 380L172 212Z' fill='%233b82f6'/><circle cx='256' cy='256' r='48' fill='%236366f1'/></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
