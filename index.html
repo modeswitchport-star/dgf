@@ -10,6 +10,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Discipline">
   
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -29,7 +32,7 @@
     }
   </script>
 
-  <!-- Chart.js CDN with safe fallback -->
+  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -183,8 +186,9 @@
       <div class="flex items-center gap-3">
         <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
         <div>
-          <div class="text-xs font-semibold tracking-wider uppercase text-zinc-100 font-mono">
-            DISCIPLINE
+          <div class="text-xs font-semibold tracking-wider uppercase text-zinc-100 font-mono flex items-center gap-1.5">
+            <span>DISCIPLINE</span>
+            <span id="tgIndicator" class="text-[9px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 font-sans hidden">TG</span>
           </div>
           <div id="playerHeaderRank" class="text-[11px] text-zinc-500 font-mono">
             Уровень 1 · Инициация
@@ -214,7 +218,9 @@
       <!-- HERO PLAYER SUMMARY -->
       <div class="minimal-card p-4">
         <div class="flex justify-between items-baseline mb-2">
-          <div class="text-[11px] font-mono uppercase text-zinc-500 tracking-wider">Прогресс ранга</div>
+          <div class="text-[11px] font-mono uppercase text-zinc-500 tracking-wider">
+            <span id="playerNameDisplay">Охотник</span> · Прогресс
+          </div>
           <div id="playerHeaderXP" class="text-xs font-mono text-zinc-400">
             0 / 100 XP
           </div>
@@ -263,76 +269,14 @@
             0/4
           </span>
         </div>
-        <button onclick="window.openAddQuestModal()" class="text-xs text-zinc-400 hover:text-white px-2.5 py-1 rounded border border-borderSubtle hover:border-borderActive transition">
+        <button onclick="window.openAddQuestModal()" class="text-xs text-zinc-400 hover:text-white px-2.5 py-1 rounded border border-borderSubtle hover:border-borderActive transition cursor-pointer">
           + Добавить
         </button>
       </div>
 
-      <!-- QUESTS LIST CONTAINER (Pre-rendered for zero-delay visual loading) -->
+      <!-- QUESTS LIST CONTAINER -->
       <div id="questsContainer" class="space-y-2">
-        <div class="quest-item p-3 flex items-start gap-3 cursor-pointer">
-          <div class="pt-0.5">
-            <input type="checkbox" onchange="window.app ? window.app.toggleQuest('q_wed_1') : null">
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="font-mono text-[10px] text-zinc-400 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700/60">INT</span>
-              <span class="text-[11px] text-zinc-500">09:00 - 15:00</span>
-              <span class="text-[11px] font-mono text-zinc-400 ml-auto">+50</span>
-            </div>
-            <div class="quest-title text-xs text-zinc-200 leading-normal">
-              Учеба на работе: маски подсетей + утилиты Linux
-            </div>
-          </div>
-        </div>
-
-        <div class="quest-item p-3 flex items-start gap-3 cursor-pointer">
-          <div class="pt-0.5">
-            <input type="checkbox" onchange="window.app ? window.app.toggleQuest('q_wed_2') : null">
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="font-mono text-[10px] text-zinc-400 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700/60">STR</span>
-              <span class="text-[11px] text-zinc-500">17:30 - 19:00</span>
-              <span class="text-[11px] font-mono text-zinc-400 ml-auto">+60</span>
-            </div>
-            <div class="quest-title text-xs text-zinc-200 leading-normal">
-              Тренировка Б (Фуллбоди: румынская тяга, жим стоя, подтягивания)
-            </div>
-          </div>
-        </div>
-
-        <div class="quest-item p-3 flex items-start gap-3 cursor-pointer">
-          <div class="pt-0.5">
-            <input type="checkbox" onchange="window.app ? window.app.toggleQuest('q_wed_3') : null">
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="font-mono text-[10px] text-zinc-400 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700/60">REC</span>
-              <span class="text-[11px] text-zinc-500">19:30 - 22:00</span>
-              <span class="text-[11px] font-mono text-zinc-400 ml-auto">+35</span>
-            </div>
-            <div class="quest-title text-xs text-zinc-200 leading-normal">
-              Партия в бильярд или свободный вечер
-            </div>
-          </div>
-        </div>
-
-        <div class="quest-item p-3 flex items-start gap-3 cursor-pointer">
-          <div class="pt-0.5">
-            <input type="checkbox" onchange="window.app ? window.app.toggleQuest('q_wed_4') : null">
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="font-mono text-[10px] text-zinc-400 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700/60">REC</span>
-              <span class="text-[11px] text-zinc-500">22:30 - 23:00</span>
-              <span class="text-[11px] font-mono text-zinc-400 ml-auto">+25</span>
-            </div>
-            <div class="quest-title text-xs text-zinc-200 leading-normal">
-              Отбой до 23:00 (сохранение утренней энергии)
-            </div>
-          </div>
-        </div>
+        <!-- Rendered by app.js -->
       </div>
     </div>
 
@@ -351,7 +295,7 @@
           class="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 rounded-lg p-3 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none resize-none transition mb-3"
         ></textarea>
 
-        <button id="analyzeReflectionBtn" onclick="window.app ? window.app.handleReflectionAnalysis() : null" class="w-full py-2.5 btn-primary text-xs uppercase font-mono tracking-wider transition">
+        <button id="analyzeReflectionBtn" onclick="window.app ? window.app.handleReflectionAnalysis() : null" class="w-full py-2.5 btn-primary text-xs uppercase font-mono tracking-wider transition cursor-pointer">
           Разобрать день и обновить задачи
         </button>
       </div>
@@ -439,54 +383,48 @@
       </div>
     </div>
 
-    <!-- TAB 4: CLOUD & SETTINGS -->
+    <!-- TAB 4: CLOUD & TELEGRAM -->
     <div id="view-settings" class="tab-view space-y-4 hidden">
-      <div class="minimal-card p-4">
-        <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">Синхронизация (ПК и телефон)</div>
-        <p class="text-xs text-zinc-500 mb-3">
-          Введи один ключ на обоих устройствах для авто-синхронизации.
+      
+      <!-- TELEGRAM CLOUD SYNC -->
+      <div class="minimal-card p-4 border border-zinc-700">
+        <div class="flex items-center justify-between mb-1">
+          <div class="text-xs font-mono uppercase tracking-wider text-white">Синхронизация через Telegram Cloud</div>
+          <span id="tgCloudBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800">
+            Готово
+          </span>
+        </div>
+        <p class="text-xs text-zinc-400 mb-3 leading-relaxed">
+          Внутри Telegram данные синхронизируются через официальный <strong>Telegram CloudStorage</strong>. Твой аккаунт Telegram сам хранит весь твой прогресс между телефоном и ПК без паролей и кодов!
         </p>
 
-        <div class="flex gap-2 mb-2">
-          <input type="text" id="syncKeyInput" placeholder="SOLO-XXXX" class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-zinc-200 uppercase tracking-wider focus:outline-none focus:border-zinc-600">
-          <button id="saveSyncKeyBtn" class="btn-primary px-3 py-2 text-xs font-mono">
-            Связать
+        <div class="space-y-2">
+          <button onclick="window.app.forceTgSync()" class="w-full py-2.5 btn-primary text-xs font-mono flex items-center justify-center gap-2 cursor-pointer">
+            <span>🔄</span> Принудительно обновить из облака
           </button>
         </div>
-
-        <button id="genSyncKeyBtn" class="text-xs text-zinc-400 hover:text-white font-mono transition">
-          Сгенерировать новый ключ
-        </button>
       </div>
 
-      <div class="minimal-card p-4">
-        <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">Экспорт в Telegram</div>
-        <p class="text-xs text-zinc-500 mb-3">
-          Отправить текстовый отчет дня в личные сообщения или «Избранное».
-        </p>
-        <button id="shareTelegramBtn" class="w-full py-2 btn-secondary text-xs font-mono transition">
-          Отправить в Telegram
-        </button>
-      </div>
-
+      <!-- GEMINI API KEY -->
       <div class="minimal-card p-4">
         <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">Google Gemini API (опционально)</div>
         <p class="text-xs text-zinc-500 mb-2">
-          Бесплатный ключ из Google AI Studio для углубленного разбора заметок нейросетью.
+          Бесплатный ключ из Google AI Studio для нейросетевого разбора заметок ментором.
         </p>
 
         <div class="flex gap-2">
           <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-zinc-200 focus:outline-none focus:border-zinc-600">
-          <button id="saveApiKeyBtn" class="btn-secondary px-3 py-2 text-xs font-mono">
+          <button id="saveApiKeyBtn" class="btn-secondary px-3 py-2 text-xs font-mono cursor-pointer">
             Сохранить
           </button>
         </div>
       </div>
 
+      <!-- LOCAL BACKUP -->
       <div class="minimal-card p-4">
-        <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2">Резервная копия</div>
+        <div class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2">Резервная копия (Файл)</div>
         <div class="flex gap-2">
-          <button id="exportBackupBtn" class="flex-1 py-2 btn-secondary text-xs font-mono text-center">
+          <button id="exportBackupBtn" class="flex-1 py-2 btn-secondary text-xs font-mono text-center cursor-pointer">
             Экспорт JSON
           </button>
           <label class="flex-1 py-2 btn-secondary text-xs font-mono text-center cursor-pointer">
@@ -499,7 +437,7 @@
 
   </main>
 
-  <!-- BOTTOM NAVIGATION (Direct onclick handlers so they always respond) -->
+  <!-- BOTTOM NAVIGATION -->
   <nav class="fixed bottom-0 left-0 right-0 z-40 bg-appDark/95 backdrop-blur-md border-t border-borderSubtle px-2 py-2">
     <div class="max-w-md mx-auto grid grid-cols-4 gap-1">
       <button onclick="window.switchTab('dashboard')" data-tab-target="dashboard" class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-white bg-zinc-800/60 transition cursor-pointer">
@@ -533,7 +471,7 @@
       <p class="text-xs text-zinc-400 mb-5 leading-relaxed">
         Дисциплина дает стабильный результат. Базовые показатели увеличены.
       </p>
-      <button id="closeLevelUpBtn" onclick="document.getElementById('levelUpModal').classList.add('hidden')" class="w-full py-2 btn-primary text-xs font-mono uppercase">
+      <button id="closeLevelUpBtn" onclick="document.getElementById('levelUpModal').classList.add('hidden')" class="w-full py-2 btn-primary text-xs font-mono uppercase cursor-pointer">
         Продолжить
       </button>
     </div>
@@ -544,7 +482,7 @@
     <div class="minimal-card max-w-sm w-full p-4 border border-zinc-700 bg-zinc-950">
       <div class="flex items-center justify-between mb-3">
         <div class="text-xs font-mono uppercase tracking-wider text-zinc-300">Новая задача</div>
-        <button onclick="document.getElementById('addQuestModal').classList.add('hidden')" class="text-zinc-500 hover:text-white">&times;</button>
+        <button onclick="document.getElementById('addQuestModal').classList.add('hidden')" class="text-zinc-500 hover:text-white cursor-pointer">&times;</button>
       </div>
       
       <form id="addQuestForm" class="space-y-3">
@@ -575,10 +513,10 @@
         </div>
 
         <div class="flex gap-2 pt-2">
-          <button type="button" onclick="document.getElementById('addQuestModal').classList.add('hidden')" class="flex-1 py-2 btn-secondary text-xs font-mono">
+          <button type="button" onclick="document.getElementById('addQuestModal').classList.add('hidden')" class="flex-1 py-2 btn-secondary text-xs font-mono cursor-pointer">
             Отмена
           </button>
-          <button type="submit" class="flex-1 py-2 btn-primary text-xs font-mono uppercase">
+          <button type="submit" class="flex-1 py-2 btn-primary text-xs font-mono uppercase cursor-pointer">
             Создать
           </button>
         </div>
@@ -586,9 +524,19 @@
     </div>
   </div>
 
-  <!-- BULLETPROOF SCRIPT -->
+  <!-- SCRIPT ENGINE WITH TELEGRAM CLOUD STORAGE & HAPTICS -->
   <script>
-    // Safe storage wrapper (never throws)
+    // --- TELEGRAM WEB APP INTEGRATION ---
+    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    if (tg) {
+      try {
+        tg.ready();
+        tg.expand();
+        tg.setHeaderColor('#08080a');
+        tg.setBackgroundColor('#08080a');
+      } catch(e) {}
+    }
+
     const storage = {
       get(k) {
         try { return localStorage.getItem(k); } catch(e) { return null; }
@@ -597,6 +545,64 @@
         try { localStorage.setItem(k, v); } catch(e) {}
       }
     };
+
+    // Telegram CloudStorage Promise wrapper
+    const tgCloud = {
+      isAvailable() {
+        return !!(tg && tg.CloudStorage);
+      },
+      getItem(key) {
+        return new Promise((resolve) => {
+          if (!this.isAvailable()) return resolve(null);
+          try {
+            tg.CloudStorage.getItem(key, (err, val) => {
+              if (err || !val) resolve(null);
+              else resolve(val);
+            });
+          } catch(e) { resolve(null); }
+        });
+      },
+      getItems(keys) {
+        return new Promise((resolve) => {
+          if (!this.isAvailable()) return resolve({});
+          try {
+            if (tg.CloudStorage.getItems) {
+              tg.CloudStorage.getItems(keys, (err, values) => {
+                if (err || !values) resolve({});
+                else resolve(values);
+              });
+            } else {
+              Promise.all(keys.map(k => this.getItem(k))).then(results => {
+                const res = {};
+                keys.forEach((k, i) => res[k] = results[i]);
+                resolve(res);
+              });
+            }
+          } catch(e) { resolve({}); }
+        });
+      },
+      setItem(key, val) {
+        return new Promise((resolve) => {
+          if (!this.isAvailable()) return resolve(false);
+          try {
+            tg.CloudStorage.setItem(key, String(val), (err, res) => {
+              resolve(!err && res);
+            });
+          } catch(e) { resolve(false); }
+        });
+      }
+    };
+
+
+    function triggerHaptic(type = 'success') {
+      if (tg && tg.HapticFeedback) {
+        try {
+          if (type === 'click') tg.HapticFeedback.impactOccurred('light');
+          else if (type === 'levelup') tg.HapticFeedback.notificationOccurred('success');
+          else tg.HapticFeedback.impactOccurred('medium');
+        } catch(e) {}
+      }
+    }
 
     window.openAddQuestModal = function() {
       const m = document.getElementById('addQuestModal');
@@ -628,6 +634,7 @@
         }
       }
       playQuestComplete() {
+        triggerHaptic('success');
         try {
           this.init();
           if (!this.ctx) return;
@@ -646,6 +653,7 @@
         } catch(e) {}
       }
       playLevelUp() {
+        triggerHaptic('levelup');
         try {
           this.init();
           if (!this.ctx) return;
@@ -665,6 +673,7 @@
         } catch(e) {}
       }
       playClick() {
+        triggerHaptic('click');
         try {
           this.init();
           if (!this.ctx) return;
@@ -712,7 +721,6 @@
       if (!canvas) return;
       const dataValues = [stats.INT || 25, stats.STR || 25, stats.REL || 25, stats.REC || 25];
 
-      // Always draw canvas fallback first to ensure instant graphics
       drawCanvasRadar(canvas, dataValues);
 
       if (window.Chart) {
@@ -752,7 +760,6 @@
             }
           });
         } catch(e) {
-          console.warn('Chart.js init fallback:', e);
           drawCanvasRadar(canvas, dataValues);
         }
       }
@@ -909,7 +916,36 @@
       setApiKey(k) { this.apiKey = k.trim(); storage.set('gemini_api_key', this.apiKey); }
       async analyzeReflection(text) {
         if (!text || text.trim().length < 4) throw new Error('Напиши хотя бы пару слов.');
+        if (this.apiKey) {
+          try {
+            return await this.callGeminiAPI(text);
+          } catch(e) {
+            console.warn('Gemini fallback:', e);
+            return this.heuristic(text);
+          }
+        }
         return this.heuristic(text);
+      }
+      async callGeminiAPI(text) {
+        const prompt = `Ты — Ментор по самодисциплине в стиле Solo Leveling. Разбери заметку подопечного: "${text}".
+Верни строго JSON:
+{
+  "mentorVerdict": "Краткий разбор дня (3-4 емких предложения)",
+  "xpAwarded": { "INT": 30, "STR": 30, "REL": 20, "REC": 15 },
+  "quests": [
+    { "title": "Название квеста", "category": "INT", "xp": 50, "timeSlot": "09:00 - 15:00 на работе" }
+  ]
+}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        const d = await res.json();
+        const raw = d.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const clean = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(clean);
       }
       heuristic(text) {
         const lower = text.toLowerCase();
@@ -924,7 +960,7 @@
         }
         if (lower.includes('зал') || lower.includes('трен') || lower.includes('жим') || lower.includes('тяг')) {
           strXP += 35;
-          notes.push('Тело · Силовая нагрузка получена. Следи за сном для восстановления связок.');
+          notes.push('Тело · Силовая нагрузка получена. Мышцы растут в покое.');
           quests.push({ title: 'Фуллбоди тренировка в зале или 8 000 шагов', category: 'STR', xp: 55, timeSlot: '17:30 - 19:00' });
         }
         if (lower.includes('девушк') || lower.includes('свидан') || lower.includes('гулял')) {
@@ -949,53 +985,6 @@
     }
     const aiMentor = new AIMentor();
 
-    class CloudSync {
-      constructor() { this.syncKey = storage.get('solo_sync_key') || ''; }
-      getSyncKey() { return this.syncKey; }
-      setSyncKey(k) { this.syncKey = k.trim().toUpperCase(); storage.set('solo_sync_key', this.syncKey); }
-      generateNewKey() {
-        const rand = Math.random().toString(36).substring(2, 8).toUpperCase();
-        const k = 'SOLO-' + rand;
-        this.setSyncKey(k);
-        return k;
-      }
-      exportToFile(state) {
-        const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(state, null, 2));
-        const a = document.createElement('a');
-        a.href = dataStr;
-        a.download = `discipline-${new Date().toISOString().slice(0, 10)}.json`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      }
-      shareToTelegram(state) {
-        const today = new Date().toLocaleDateString('ru-RU');
-        const rank = getRank(state.player.level);
-        let text = `Discipline | ${today}\nL${state.player.level} (${rank.title})\nXP: ${state.player.xp}/${state.player.nextLevelXp}\nINT: ${state.stats.INT} | STR: ${state.stats.STR} | REL: ${state.stats.REL} | REC: ${state.stats.REC}`;
-        window.open(`https://t.me/share/url?url=${encodeURIComponent('https://github.com')}&text=${encodeURIComponent(text)}`, '_blank');
-      }
-      async pushToCloud(state) {
-        if (!this.syncKey) return;
-        try {
-          await fetch(`https://kvdb.io/4y2P8kE5sUfD6LgN7p9q/${this.syncKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ state, t: Date.now() })
-          });
-        } catch(e) {}
-      }
-      async pullFromCloud() {
-        if (!this.syncKey) return null;
-        try {
-          const res = await fetch(`https://kvdb.io/4y2P8kE5sUfD6LgN7p9q/${this.syncKey}`);
-          if (!res.ok) return null;
-          const d = await res.json();
-          return d.state || null;
-        } catch(e) { return null; }
-      }
-    }
-    const cloudSync = new CloudSync();
-
     // --- MAIN APP CONTROLLER ---
     class App {
       constructor() {
@@ -1014,6 +1003,7 @@
               parsed.lastDate = todayStr;
               this.refreshDailyQuests(parsed);
             }
+            if (!parsed.updatedAt) parsed.updatedAt = Date.now();
             if (parsed.quests && parsed.quests.length > 0) return parsed;
           } catch (e) {}
         }
@@ -1021,9 +1011,15 @@
         const dayOfWeek = new Date().getDay();
         const initialQuests = JSON.parse(JSON.stringify(DEFAULT_DAY_TEMPLATES[dayOfWeek] || DEFAULT_DAY_TEMPLATES[3]));
 
+        let initialName = 'Охотник';
+        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+          initialName = tg.initDataUnsafe.user.first_name || 'Охотник';
+        }
+
         return {
           lastDate: todayStr,
-          player: { name: 'Пользователь', level: 1, xp: 0, nextLevelXp: 100, streak: 1, lastActiveDate: todayStr },
+          updatedAt: 0,
+          player: { name: initialName, level: 1, xp: 0, nextLevelXp: 100, streak: 1, lastActiveDate: todayStr },
           stats: { INT: 25, STR: 25, REL: 25, REC: 25 },
           quests: initialQuests,
           journal: []
@@ -1038,19 +1034,89 @@
       }
 
       saveState() {
+        this.state.updatedAt = Date.now();
         storage.set('solo_discipline_state', JSON.stringify(this.state));
-        if (cloudSync.getSyncKey()) cloudSync.pushToCloud(this.state);
+        this.saveToTgCloud();
+      }
+
+      async saveToTgCloud() {
+        if (!tgCloud.isAvailable()) return;
+        try {
+          await tgCloud.setItem('sd_updatedAt', String(this.state.updatedAt || Date.now()));
+          await tgCloud.setItem('sd_player', JSON.stringify(this.state.player));
+          await tgCloud.setItem('sd_stats', JSON.stringify(this.state.stats));
+          await tgCloud.setItem('sd_quests', JSON.stringify(this.state.quests));
+          await tgCloud.setItem('sd_journal', JSON.stringify((this.state.journal || []).slice(0, 7)));
+          await tgCloud.setItem('sd_lastDate', this.state.lastDate);
+        } catch(e) {}
+      }
+
+      async loadFromTgCloud() {
+        if (!tgCloud.isAvailable()) return false;
+        try {
+          const items = await tgCloud.getItems(['sd_updatedAt', 'sd_player', 'sd_stats', 'sd_quests', 'sd_journal', 'sd_lastDate']);
+          if (!items || !items.sd_player) return false;
+
+          const p = JSON.parse(items.sd_player);
+          const s = JSON.parse(items.sd_stats || '{}');
+          const q = JSON.parse(items.sd_quests || '[]');
+          const j = JSON.parse(items.sd_journal || '[]');
+          const d = items.sd_lastDate || new Date().toISOString().slice(0, 10);
+          const cloudUpdatedAt = items.sd_updatedAt ? parseInt(items.sd_updatedAt, 10) : 0;
+          const localUpdatedAt = this.state.updatedAt || 0;
+
+          // If cloud is newer or local is fresh/unmodified (updatedAt = 0)
+          if (cloudUpdatedAt >= localUpdatedAt || localUpdatedAt === 0) {
+            this.state.player = p;
+            if (Object.keys(s).length > 0) this.state.stats = s;
+            if (q.length > 0) this.state.quests = q;
+            if (j.length > 0) this.state.journal = j;
+            this.state.lastDate = d;
+            this.state.updatedAt = cloudUpdatedAt || Date.now();
+            storage.set('solo_discipline_state', JSON.stringify(this.state));
+            this.renderAll();
+            return true;
+          } else {
+            // Local is newer -> push to cloud
+            this.saveToTgCloud();
+            return true;
+          }
+        } catch(e) {
+          return false;
+        }
+      }
+
+      async forceTgSync() {
+        const ok = await this.loadFromTgCloud();
+        if (ok) {
+          soundFX.playClick();
+          this.showToast('✅ Облако Telegram синхронизировано!');
+        } else {
+          await this.saveToTgCloud();
+          soundFX.playClick();
+          this.showToast('☁️ Данные сохранены в Telegram Cloud!');
+        }
       }
 
       init() {
         this.setupEventListeners();
         this.renderAll();
-        if (cloudSync.getSyncKey()) this.syncWithCloud(true);
+
+        if (tg) {
+          const tgBadge = document.getElementById('tgIndicator');
+          if (tgBadge) tgBadge.classList.remove('hidden');
+
+          if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            this.state.player.name = tg.initDataUnsafe.user.first_name || this.state.player.name;
+          }
+          // Load from Telegram CloudStorage in background
+          this.loadFromTgCloud();
+        }
       }
 
       setupEventListeners() {
         document.querySelectorAll('[data-tab-target]').forEach(btn => {
-          btn.onclick = (e) => {
+          btn.onclick = () => {
             soundFX.playClick();
             this.switchTab(btn.getAttribute('data-tab-target'));
           };
@@ -1073,40 +1139,40 @@
           };
         }
 
-        const saveSyncKeyBtn = document.getElementById('saveSyncKeyBtn');
-        if (saveSyncKeyBtn) {
-          saveSyncKeyBtn.onclick = () => {
-            const val = document.getElementById('syncKeyInput').value;
-            if (val) {
-              cloudSync.setSyncKey(val);
-              soundFX.playClick();
-              this.syncWithCloud(false);
-            }
-          };
-        }
-
-        const genSyncKeyBtn = document.getElementById('genSyncKeyBtn');
-        if (genSyncKeyBtn) {
-          genSyncKeyBtn.onclick = () => {
-            const newKey = cloudSync.generateNewKey();
-            document.getElementById('syncKeyInput').value = newKey;
-            soundFX.playClick();
-            this.saveState();
-            this.showToast('Ключ: ' + newKey);
-          };
-        }
-
         const exportBtn = document.getElementById('exportBackupBtn');
         if (exportBtn) {
           exportBtn.onclick = () => {
-            cloudSync.exportToFile(this.state);
+            const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.state, null, 2));
+            const a = document.createElement('a');
+            a.href = dataStr;
+            a.download = `discipline-${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
             soundFX.playClick();
           };
         }
 
-        const shareTgBtn = document.getElementById('shareTelegramBtn');
-        if (shareTgBtn) {
-          shareTgBtn.onclick = () => cloudSync.shareToTelegram(this.state);
+        const importInput = document.getElementById('importBackupInput');
+        if (importInput) {
+          importInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (ev) => {
+                try {
+                  this.state = JSON.parse(ev.target.result);
+                  this.saveState();
+                  this.renderAll();
+                  soundFX.playLevelUp();
+                  this.showToast('Восстановлено из файла');
+                } catch(err) {
+                  alert('Ошибка чтения файла');
+                }
+              };
+              reader.readAsText(file);
+            }
+          };
         }
       }
 
@@ -1269,25 +1335,6 @@
         document.getElementById('addQuestModal').classList.add('hidden');
       }
 
-      async syncWithCloud(silent = false) {
-        if (!cloudSync.getSyncKey()) return;
-        const remoteState = await cloudSync.pullFromCloud();
-        if (remoteState && remoteState.player) {
-          if (remoteState.player.level > this.state.player.level || 
-             (remoteState.player.level === this.state.player.level && remoteState.player.xp > this.state.player.xp)) {
-            this.state = remoteState;
-            this.saveState();
-            this.renderAll();
-            if (!silent) this.showToast('Синхронизировано');
-          } else {
-            await cloudSync.pushToCloud(this.state);
-            if (!silent) this.showToast('Облако обновлено');
-          }
-        } else {
-          await cloudSync.pushToCloud(this.state);
-        }
-      }
-
       showToast(message) {
         let toast = document.getElementById('appToast');
         if (!toast) {
@@ -1317,6 +1364,8 @@
       renderHeroStats() {
         const p = this.state.player;
         const rank = getRank(p.level);
+        const nameEl = document.getElementById('playerNameDisplay');
+        if (nameEl) nameEl.textContent = p.name || 'Охотник';
         const rankEl = document.getElementById('playerHeaderRank');
         if (rankEl) rankEl.textContent = rank.title;
         const lvlEl = document.getElementById('playerHeaderLevel');
@@ -1428,12 +1477,9 @@
       renderSettings() {
         const keyInput = document.getElementById('apiKeyInput');
         if (keyInput) keyInput.value = aiMentor.apiKey || '';
-        const syncInput = document.getElementById('syncKeyInput');
-        if (syncInput) syncInput.value = cloudSync.getSyncKey() || '';
       }
     }
 
-    // Instant Boot Logic
     function startApp() {
       if (window.app) return;
       try {
